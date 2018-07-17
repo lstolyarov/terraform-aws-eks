@@ -144,6 +144,10 @@ resource "aws_launch_configuration" "eks_worker_lc" {
   lifecycle {
     create_before_destroy = true
   }
+
+  root_block_device {
+    delete_on_termination = true
+  }
 }
 
 resource "aws_autoscaling_group" "eks_worker_asg" {
