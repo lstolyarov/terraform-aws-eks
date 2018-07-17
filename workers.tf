@@ -87,7 +87,7 @@ resource "aws_security_group_rule" "worker_ingress_https" {
   type                     = "ingress"
 }
 
-data "aws_ami" "eks-worker" {
+data "aws_ami" "eks_worker" {
   filter {
     name   = "name"
     values = ["eks-worker-*"]
@@ -185,6 +185,6 @@ data:
 CONFIGMAPAWSAUTH
 }
 
-output "config-map-aws-auth" {
+output "config_map_aws_auth" {
   value = "${local.config-map-aws-auth}"
 }
