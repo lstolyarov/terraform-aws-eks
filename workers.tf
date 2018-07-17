@@ -22,11 +22,6 @@ resource "aws_iam_role_policy_attachment" "eks_worker_policy" {
   role       = "${aws_iam_role.eks_worker_role.name}"
 }
 
-resource "aws_iam_role_policy_attachment" "eks_cni_policy" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSCNIPolicy"
-  role       = "${aws_iam_role.eks_worker_role.name}"
-}
-
 resource "aws_iam_role_policy_attachment" "AmazonEC2ContainerRegistryReadOnly" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
   role       = "${aws_iam_role.eks_worker_role.name}"
@@ -134,7 +129,7 @@ USERDATA
 resource "aws_launch_configuration" "eks_worker_lc" {
   associate_public_ip_address = true
   iam_instance_profile        = "${aws_iam_instance_profile.eks_worker_profile.name}"
-  image_id                    = "${data.aws_ami.eks-worker.id}"
+  image_id                    = "${data.aws_ami.eks_worker.id}"
   instance_type               = "t2.medium"
   name_prefix                 = "${var.cluster_name}"
   security_groups             = ["${aws_security_group.eks_worker_sg.id}"]
