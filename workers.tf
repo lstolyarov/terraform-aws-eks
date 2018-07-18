@@ -22,6 +22,11 @@ resource "aws_iam_role_policy_attachment" "eks_worker_policy" {
   role       = "${aws_iam_role.eks_worker_role.name}"
 }
 
+resource "aws_iam_role_policy_attachment" "AmazonEKS_CNI_Policy" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
+  role       = "${aws_iam_role.eks_worker_role.name}"
+}
+
 resource "aws_iam_role_policy_attachment" "AmazonEC2ContainerRegistryReadOnly" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
   role       = "${aws_iam_role.eks_worker_role.name}"
@@ -127,14 +132,13 @@ USERDATA
 }
 
 resource "aws_launch_configuration" "eks_worker_lc" {
-  associate_public_ip_address = true
-  iam_instance_profile        = "${aws_iam_instance_profile.eks_worker_profile.name}"
-  image_id                    = "${data.aws_ami.eks_worker.id}"
-  instance_type               = "t2.medium"
-  name_prefix                 = "${var.cluster_name}"
-  security_groups             = ["${aws_security_group.eks_worker_sg.id}"]
-  user_data_base64            = "${base64encode(local.demo-node-userdata)}"
-  key_name                    = "${var.key}"
+  iam_instance_profile = "${aws_iam_instance_profile.eks_worker_profile.name}"
+  image_id             = "${data.aws_ami.eks_worker.id}"
+  instance_type        = "t2.medium"
+  name_prefix          = "${var.cluster_name}"
+  security_groups      = ["${aws_security_group.eks_worker_sg.id}"]
+  user_data_base64     = "${base64encode(local.demo-node-userdata)}"
+  key_name             = "${var.key}"
 
   lifecycle {
     create_before_destroy = true
@@ -151,7 +155,7 @@ resource "aws_autoscaling_group" "eks_worker_asg" {
   max_size             = 5
   min_size             = 1
   name                 = "${var.cluster_name}"
-  vpc_zone_identifier  = "${var.subnet_ids}"
+  vpc_zone_identifier  = ["${var.subnet_ids}"]
 
   tag {
     key                 = "Name"
